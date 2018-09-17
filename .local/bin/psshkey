@@ -1,0 +1,10 @@
+#!/bin/bash
+
+SSH_STR=$1
+KEY_LOC=$2
+
+FNAME=$(uuidgen).pub
+
+scp "${KEY_LOC}" $SSH_STR:~/$FNAME
+ssh $SSH_STR "cat ${FNAME} >> .ssh/authorized_keys"
+ssh $SSH_STR "rm ${FNAME}"

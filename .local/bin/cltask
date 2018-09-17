@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# Defaults
+DAYS=0
+TIME=$(date +"%H:%M")
+
+DAYFILE=$(date +"%a-%m-%d-%y".log -d "${DAYS} days")
+BASE=~/.work_log
+
+EDIT_FLAG=
+
+edit_log(){
+	vim $1
+}
+
+die(){
+	echo "Error"
+	exit 1
+}
+
+show_help(){
+	echo "Usage: cltask [options...] [task name]"
+	echo "  Options:"
+	echo "   -h  --help              Show this text"
+	echo "   -e  --edit              Edit the work log file"
+	echo "   -d  --days  DAYS        Specifies an offset from current" 
+	echo "                           date in days"
+	echo "   -t  --time  hh:mm       Specifies the entry time"
+}
+
+show_logs(){
+	ls $BASE
+}
+
+while :; do
+	case $1 in
+		-h|-\?|--help)
+			show_help
+			exit
+			;;
+		-ls)
+			show_logs
+			exit
+			;;
+		-d|--days)
+			if [ "$2" ]; then
+				DAYS=$2
+				DAYFILE=$(date +"%a-%m-%d-%y".log -d "${DAYS} days")
+				shift
+			else
+				die
+			fi
+			;;
+		-t|--time)
+			if [ "$2" ]; then
+				TIME=$2
+				shift
+			else
+				die
+			fi
+			;;
+		-e|--edit)
+			# printf "path: %s\n" $BASE/$DAYFILE
+			EDIT_FLAG="FLY"
+			;;
+		--)
+			shift
+			break
+			;;
+		-?*)
+			printf 'WARN: Unknown option ignored: %s\n' "$1" >&2
+			;;
+		*)
+			break
+	esac
+
+	shift
+done
+
+# Check for edit flag
+if [ ! -z "$EDIT_FLAG" ]; then
+	edit_log $BASE/$DAYFILE
+fi;
+
+TASK=$1
+
+DAYFILE=$(date +"%a-%m-%d-%y".log -d "${DAYS} days")
+LOGDATE=$(date -d "${DAYS} days ${TIME}")
+BASE=~/.work_log
+
+# printf "DAYFILE: %s\n" $DAYFILE
+# printf "LOGDATE: %s\n" "${LOGDATE}"
+# printf "TASK: %s\n" "${TASK}"
+
+echo ${TASK} : $(date) >> $BASE/$DAYFILE
+
+# Sort File
+# not sure yet
+

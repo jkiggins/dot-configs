@@ -1,0 +1,166 @@
+#!/bin/bash
+
+# flags
+VERBOSE=1
+
+# defaults
+STOP=inactive
+TIME_S=1
+ACTION=exit
+
+
+# parse command line
+show_help(){
+	echo "Usage: activ [options...] [task name]"
+	echo "  Options:"
+	echo "   -s  --stop active|inactive"
+	echo "   -a  --action exit"
+	echo "   -s  --seconds  TIME_S" 
+	echo "   -m  --minutes  MINUETS"
+	echo "   -t  --duration SECONDS"
+}
+
+die(){
+	echo "Error"
+	exit 1
+}
+
+verbose_printf(){
+	if [ $VERBOSE -ge 2 ]; then
+		printf "$@"
+	fi;
+}
+
+info_printf(){
+	if [ $VERBOSE -ge 1 ]; then
+		printf "$@"
+	fi;
+}
+
+while :; do
+	case $1 in
+		-h|-\?|--help)
+			show_help
+			exit
+			;;
+		# When to stop polling (for now just active or inactive)
+		-p|--stop)
+			if [ "$2" ]; then
+				STOP=$2
+				shift
+			else
+				die
+			fi
+			;;
+		-sa|--stop-active)
+			STOP=active
+			;;
+		-si|--stop-inactive)
+			STOP=inactive
+			;;
+		# Test period, i.e. active within last 10 seconds
+		-s|--seconds)
+			if [ "$2" ]; then
+				TIME_S=$2
+				shift
+			else
+				die
+			fi
+			;;
+		-m|--minutes)
+			if [ "$2" ]; then
+				TIME_S=$(( $TIME_S + $2*60 ))
+				shift
+			else
+				die
+			fi
+			;;
+		# What do do when the stop condition is met, for now just exit
+		-a|--action)
+			if [ "$2" ]; then
+				ACTION=$2
+				shift
+			else
+				die
+			fi
+			;;
+		# Misc
+		-v|--verbose)
+			VERBOSE=2
+			;;
+		--)
+			shift
+			break
+			;;
+		-?*)
+			printf 'WARN: Unknown option ignored: %s\n' "$1" >&2
+			;;
+		*)
+			break
+	esac
+
+	shift
+done
+
+
+get_rcount(){
+	cat /proc/interrupts | grep "ehci_hcd:usb2" | awk '{for(i=2;i<=9;i++) t+=$i; print t; t=0}'
+}
+
+verbose_printf "Waiting for user to be %s for %i s, then %s\n" ${STOP} ${TIME_S} ${ACTION}
+
+
+handle_stop(){
+	# Now that the loop is broken, perform the action
+	# polling may be restarted from here
+	case $ACTION in
+		exit)
+			verbose_printf "Exiting based on \$ACTION=%s\n" $ACTION
+			exit 0
+			;;
+		*)
+			echo "Debug your script, this should never happen"
+			exit -1
+	esac
+}
+
+
+poll(){
+	COUNT=$(get_rcount)
+
+	while :; do
+		OLDCOUNT=$COUNT
+
+		info_printf "%s: Checking Activity at %s\n" "$(date)" "$(date +"%T" -d "+ $TIME_S seconds")"
+
+		sleep $TIME_S
+
+		COUNT=$(get_rcount)
+
+		if [ $COUNT -gt $OLDCOUNT ]; then
+
+			verbose_printf "Activity within the last %i Seconds\n" $TIME_S
+
+			if [ "$STOP" == "active" ]; then
+				break
+			fi;
+		fi;
+
+		if [ $COUNT -eq $OLDCOUNT ]; then
+
+			verbose_printf "Detected no activity for %i Seconds\n" $TIME_S
+
+			if [ "$STOP" == "inactive" ]; then
+				break
+			fi;
+		fi;
+	done
+
+	handle_stop
+}
+
+# Poll, perform ACTION on STOP
+poll
+
+
+

@@ -1,0 +1,43 @@
+#!/bin/bash
+
+P_STATUS="in\nout\nlunch\nsick\nvac\nbiz\n"
+VERBOSE=1
+CURL_OUT=
+
+# Change this if your machine's username doesn't match the ioboard
+UNAME=$USER
+
+verbose_printf(){
+        if [ $VERBOSE -ge 2 ]; then
+                printf "$@"
+        fi;
+}
+
+N_STATUS=$(echo -e $P_STATUS | grep "^$1")
+I_STATUS=$(echo -e $N_STATUS | wc -w)
+
+verbose_printf "New Status: %s\n" "$N_STATUS"
+verbose_printf "Status Lines: %i\n" $I_STATUS
+
+if [ $I_STATUS -eq 1 ]; then
+	CURL_OUT=$(curl -s "http://wanda.syr.criticallink.com/cgi-bin/usignin.cgi?login=${UNAME}&cmd=quick&status=${N_STATUS}")
+else
+	echo "Command takes one argument which must unambiguously match one of the following (like gdb commands)"
+	echo "Examples: i -> in, o -> out, ou -> out"
+	echo -e ${P_STATUS}
+	exit 1
+fi;
+
+verbose_printf "curl output: %s\n" "$CURL_OUT"
+
+# Check for Sucsessful update
+SSTR=$(echo $CURL_OUT | grep "New status was saved successfully")
+
+verbose_printf "Search for sucsess: %s\n" $SSTR
+
+if [ -z "$SSTR" ]; then
+	echo "Status not saved"
+	exit 1
+fi;
+
+exit 0
