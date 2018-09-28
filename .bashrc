@@ -104,9 +104,9 @@ fsec(){
 	grep -Fxv -f $2 $1
 }
 
-project(){
-  PROJ_DIR=~/ext/projects
-  cd ${PROJ_DIR}/$(ls -a -p ~/ext/projects/ | grep -e "\/" | grep $1)
+proj(){
+  PROJ_DIR=~/projects
+  cd ${PROJ_DIR}/$(ls -a -p $PROJ_DIR | grep -e "\/" | grep $1)
 }
 
 up(){
