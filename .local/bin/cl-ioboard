@@ -1,43 +1,127 @@
 #!/bin/bash
 
 P_STATUS="in\nout\nlunch\nsick\nvac\nbiz\n"
+
+# Default to current username
+UNAME=$USER
 VERBOSE=1
+MODE=SET
+QUERY=$UNAME
+
 CURL_OUT=
 
-# Change this if your machine's username doesn't match the ioboard
-UNAME=$USER
-
-verbose_printf(){
+verbose_printf()
+{
         if [ $VERBOSE -ge 2 ]; then
                 printf "$@"
         fi;
 }
 
-N_STATUS=$(echo -e $P_STATUS | grep "^$1")
-I_STATUS=$(echo -e $N_STATUS | wc -w)
+info_printf()
+{
+	if [ $VERBOSE -ge 1 ]; then
+		printf "$@"
+	fi;
+}
 
-verbose_printf "New Status: %s\n" "$N_STATUS"
-verbose_printf "Status Lines: %i\n" $I_STATUS
+error_printf()
+{
+	if [ $VERBOSE -ge 0 ]; then
+		printf "$@"
+	fi;
+}
 
-if [ $I_STATUS -eq 1 ]; then
-	CURL_OUT=$(curl -s "http://wanda.syr.criticallink.com/cgi-bin/usignin.cgi?login=${UNAME}&cmd=quick&status=${N_STATUS}")
-else
-	echo "Command takes one argument which must unambiguously match one of the following (like gdb commands)"
-	echo "Examples: i -> in, o -> out, ou -> out"
-	echo -e ${P_STATUS}
-	exit 1
-fi;
+check_args()
+{
+	if [ $1 -ne $2 ]; then
+		error_printf "\nERROR: Atleast $2 argument(s) required \n\n"
+		show_help
+		exit 1
+	fi;
+}
 
-verbose_printf "curl output: %s\n" "$CURL_OUT"
+show_help(){
+	echo "Usage: cl-ioboard [in|out|lunch|sick|vac|biz]"
+	echo "       cl-ioboard [options] [args]"
+	echo "Options:"
+	echo "  -q|--query <username>   get <username>'s status'"
+}
 
-# Check for Sucsessful update
-SSTR=$(echo $CURL_OUT | grep "New status was saved successfully")
+set_status()
+{
+	CURL_OUT=$(curl -s "http://wanda.syr.criticallink.com/cgi-bin/usignin.cgi?login=${1}&cmd=quick&status=${2}")
+	# Check for Sucsessful update
+	SSTR=$(echo $CURL_OUT | grep -o "New status was saved successfully")
 
-verbose_printf "Search for sucsess: %s\n" $SSTR
+	verbose_printf "Search for sucsess: %s\n" $SSTR
+	verbose_printf "curl output: %s\n" "$CURL_OUT"
 
-if [ -z "$SSTR" ]; then
-	echo "Status not saved"
-	exit 1
+	if [ -z "$SSTR" ]; then
+		echo "Status not saved"
+		exit 1
+	fi;
+}
+
+get_status()
+{
+	URL="http://wanda.syr.criticallink.com/cgi-bin/usignin.cgi?cmd=user&name=${1}"
+
+	verbose_printf "get_status: URL: %s\n" "${URL}"
+
+	CURL_OUT=$(curl -s "${URL}" | sed 's/<\/TD>/<\/TD>\n/g' | grep -A 1 "Currently" | tail -n 1 | sed 's/<[^<>]*>//g')
+	echo ${CURL_OUT}
+}
+
+ARGS=("$@")
+
+# info_printf "%i Arguments passed: %s\n" $# "${ARGS[*]}"
+
+for (( i=0; i<${#ARGS[*]}; i++ ))
+do
+	arg=${ARGS[$i]}
+	case $arg in
+		-h|-\?|--help)
+			show_help
+			exit
+			;;
+		-q|--query)
+			MODE=GET
+			i=$(( $i + 1 ))
+			QUERY=${ARGS[$i]}
+			;;
+		-v|--verbose)
+			VERBOSE=2
+			;;		
+		# -*|--*)
+		# 	info_printf "unknown option %s, ignoring\n" $arg
+		# 	;&
+		*)
+			QUERY=$arg
+			verbose_printf "Query: %s\n" $QUERY
+			;&
+	esac
+done
+
+if [ "$MODE" == "SET" ]; then
+	N_STATUS=$(echo -e $P_STATUS | grep "^$QUERY")
+	I_STATUS=$(echo -e $N_STATUS | wc -w)
+
+	verbose_printf "New Status: %s\n" "$N_STATUS"
+	verbose_printf "Status Lines: %i\n" $I_STATUS
+
+	if [ $I_STATUS -eq 1 ]; then
+		verbose_printf "Setting status for %s to %s\n" $UNAME $N_STATUS
+		set_status $UNAME $N_STATUS
+	else
+		echo "Command takes one argument which must unambiguously match one of the following (like gdb commands)\n"
+		echo "Examples: i -> in, o -> out, ou -> out\n"
+		echo -e ${P_STATUS}
+		exit 1
+	fi;
+
+elif [ "$MODE" == "GET" ]; then
+	verbose_printf "Getting status for %s\n" $UNAME
+	get_status $UNAME
 fi;
 
 exit 0
