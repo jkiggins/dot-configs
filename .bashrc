@@ -1,7 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -37,14 +33,10 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# set a fancy prompt (non-color, unless we know we "want" color)
-color_prompt=yes
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
+PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+# Non-color prompt
+# PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -100,11 +92,13 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Functions and Aliases
+
 fsec(){
 	grep -Fxv -f $2 $1
 }
 
-project(){
+proj(){
   PROJ_DIR=~/ext/projects
   cd ${PROJ_DIR}/$(ls -a -p ~/ext/projects/ | grep -e "\/" | grep $1)
 }
@@ -122,6 +116,13 @@ pup(){
     pushd .
     up $1
   fi;
+}
+
+div(){
+  for ((i = 0; i < $COLUMNS; i++)); do
+    printf "-"
+  done
+  echo
 }
 
 alias date-fn='date +"%m-%d-%y_%H%M%S"'

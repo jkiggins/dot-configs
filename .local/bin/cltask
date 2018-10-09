@@ -8,9 +8,14 @@ DAYFILE=$(date +"%a-%m-%d-%y".log -d "${DAYS} days")
 BASE=~/.work_log
 
 EDIT_FLAG=
+CAT_FLAG=
 
 edit_log(){
 	vim $1
+}
+
+cat_log(){
+  cat $1
 }
 
 die(){
@@ -38,7 +43,7 @@ while :; do
 			show_help
 			exit
 			;;
-		-ls)
+		--ls)
 			show_logs
 			exit
 			;;
@@ -60,10 +65,12 @@ while :; do
 			fi
 			;;
 		-e|--edit)
-			# printf "path: %s\n" $BASE/$DAYFILE
 			EDIT_FLAG="FLY"
 			;;
-		--)
+		-p|--cat)
+			CAT_FLAG="FLY"
+			;;
+    --)
 			shift
 			break
 			;;
@@ -77,9 +84,14 @@ while :; do
 	shift
 done
 
-# Check for edit flag
 if [ ! -z "$EDIT_FLAG" ]; then
 	edit_log $BASE/$DAYFILE
+  exit 0
+fi;
+
+if [ ! -z "$CAT_FLAG" ] || [ -z "$1" ]; then
+	cat_log $BASE/$DAYFILE
+  exit 0
 fi;
 
 TASK=$1
