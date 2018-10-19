@@ -125,5 +125,10 @@ div(){
   echo
 }
 
+alias i3-config='vim ~/.config/i3/config'
+alias essh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+alias escp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+alias watson-swap='watson stop && watson start'
+alias clip='xclip -selection clipboard'
 alias date-fn='date +"%m-%d-%y_%H%M%S"'
 alias whats-myip="host myip.opendns.com resolver1.opendns.com | grep \"has address\" | awk -F' ' '{print $4;}'"
