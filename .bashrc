@@ -1,7 +1,3 @@
-# ~/.bashrc: executed by bash(1) for non-login shells.
-# see /usr/share/doc/bash/examples/startup-files (in the package bash-doc)
-# for examples
-
 # If not running interactively, don't do anything
 case $- in
     *i*) ;;
@@ -37,14 +33,10 @@ if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-# set a fancy prompt (non-color, unless we know we "want" color)
-color_prompt=yes
-if [ "$color_prompt" = yes ]; then
-    PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
-else
-    PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
-fi
-unset color_prompt force_color_prompt
+PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+
+# Non-color prompt
+# PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -100,6 +92,8 @@ if ! shopt -oq posix; then
   fi
 fi
 
+# Functions and Aliases
+
 fsec(){
 	grep -Fxv -f $2 $1
 }
@@ -124,5 +118,17 @@ pup(){
   fi;
 }
 
+div(){
+  for ((i = 0; i < $COLUMNS; i++)); do
+    printf "-"
+  done
+  echo
+}
+
+alias i3-config='vim ~/.config/i3/config'
+alias essh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+alias escp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+alias watson-swap='watson stop && watson start'
+alias clip='xclip -selection clipboard'
 alias date-fn='date +"%m-%d-%y_%H%M%S"'
 alias whats-myip="host myip.opendns.com resolver1.opendns.com | grep \"has address\" | awk -F' ' '{print $4;}'"
