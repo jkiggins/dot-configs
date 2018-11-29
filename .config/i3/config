@@ -30,7 +30,7 @@ set $right l
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec termite
+bindsym $mod+Return exec termite 
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -91,7 +91,7 @@ bindsym $mod+x scratchpad show
 bindsym $mod+c scratchpad show; scratchpad show
 
 # show/hide firefox
-bindsym $mod+z [title="Firefox"] scratchpad show
+bindsym $mod+z [instance="adm_scratch"] scratchpad show
 # show/hide vifm
 bindsym $mod+a [title="termite_scratch"] scratchpad show
 
@@ -210,11 +210,10 @@ exec --no-startup-id ~/.fehbg
 
 ## user - apps
 # start scratchpad apps
+for_window [title=".*scratch$"] move scratchpad
+for_window [instance=".*scratch$"] move scratchpad
 exec termite --title=termite_scratch
-exec [title="termite_scratch"] move scratchpad
-
-exec firefox messages.android.com trell.com calendar.google.com
-exec [title="Firefox"] move scratchpad
+exec epiphany --profile ~/.local/epiphany/adm --name=adm_scratch 
 
 # user - background
 exec --no-startup-id activ-notify -l -sa -m 20 "eye-care" "20-20-20"

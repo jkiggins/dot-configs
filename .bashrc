@@ -108,6 +108,8 @@ up(){
     for ((i=0; i<$1; i++)); do
       cd ..
     done
+  else
+      cd ..
   fi;
 }
 
@@ -125,6 +127,13 @@ div(){
   echo
 }
 
+docs(){
+    DOC_PATH=~/user/docs
+     vim -c 'set syntax=text' -M ${DOC_PATH}/$(ls -a -p $DOC_PATH | grep -v -e "\/" | grep $1)
+}
+
+alias dtcd='dtc -I dtb -O dts'
+alias dtcc='dtc -I dts -O dtb'
 alias i3-config='vim ~/.config/i3/config'
 alias essh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
 alias escp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
@@ -132,3 +141,7 @@ alias watson-swap='watson stop && watson start'
 alias clip='xclip -selection clipboard'
 alias date-fn='date +"%m-%d-%y_%H%M%S"'
 alias whats-myip="host myip.opendns.com resolver1.opendns.com | grep \"has address\" | awk -F' ' '{print $4;}'"
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
