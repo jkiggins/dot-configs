@@ -21,6 +21,10 @@ font pango:monospace 8
 set $mod Mod4
 set $mod1 Mod1
 
+# Variables for Primary and Secondary displays
+set $pdisp VGA-1
+set $sdips HDMI-1
+
 set $up k
 set $down j
 set $left h
@@ -30,7 +34,8 @@ set $right l
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec termite 
+bindsym $mod+Return exec termite
+bindsym $mod+Shift+Return exec termite --title=termite_scratch 
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -97,27 +102,27 @@ bindsym $mod+a [title="termite_scratch"] scratchpad show
 
 
 # Bind worskpaces to outputs
-workspace 1a output HDMI-1
-workspace 2a output HDMI-1
-workspace 3a output HDMI-1
-workspace 4a output HDMI-1
-workspace 5a output HDMI-1
-workspace 6a output HDMI-1
-workspace 7a output HDMI-1
-workspace 8a output HDMI-1
-workspace 9a output HDMI-1
-workspace 10a output HDMI-1
+workspace 1a output $pdisp
+workspace 2a output $pdisp
+workspace 3a output $pdisp
+workspace 4a output $pdisp
+workspace 5a output $pdisp
+workspace 6a output $pdisp
+workspace 7a output $pdisp
+workspace 8a output $pdisp
+workspace 9a output $pdisp
+workspace 10a output $pdisp 
 
-workspace 1b output HDMI-2
-workspace 2b output HDMI-2
-workspace 3b output HDMI-2
-workspace 4b output HDMI-2
-workspace 5b output HDMI-2
-workspace 6b output HDMI-2
-workspace 7b output HDMI-2
-workspace 8b output HDMI-2
-workspace 9b output HDMI-2
-workspace 10b output HDMI-2
+workspace 1b output $sdisp 
+workspace 2b output $sdisp 
+workspace 3b output $sdisp 
+workspace 4b output $sdisp 
+workspace 5b output $sdisp 
+workspace 6b output $sdisp 
+workspace 7b output $sdisp 
+workspace 8b output $sdisp 
+workspace 9b output $sdisp 
+workspace 10b output $sdisp 
 
 # Switch to workspace
 bindsym $mod+1 workspace 1a
@@ -204,7 +209,6 @@ bar {
 
 ### Startup Programs ###
 ## system
-exec --no-startup-id nm-applet
 exec compton --config ~/.config/compton.conf -b -d :0
 exec --no-startup-id ~/.fehbg
 

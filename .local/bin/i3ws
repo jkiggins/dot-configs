@@ -1,0 +1,7 @@
+#!/bin/bash
+
+WS=$1
+shift
+
+eval '$@'
+i3-msg 'move container to workspace ${WS}'

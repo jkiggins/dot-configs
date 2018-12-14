@@ -1,0 +1,116 @@
+#!/bin/bash
+
+# Exit on error
+set -e
+
+if [[ $EUID -ne 0 ]]; then
+        echo "This script must be run as root"
+        exit 1
+fi
+
+# Checks that command line argument was passed in
+# if [ $# -lt 1 ]
+# then
+#	echo "Please specify a root filesystem tarball"
+#	exit 1
+# fi
+
+root=$PWD/root
+boot=$PWD/boot
+image_name=$PWD/itx_root.img
+
+# Remove the reference SDCARD image
+rm -rf "${image_name}"
+
+# Create the reference SDCard image
+dd if=/dev/zero of="${image_name}" bs=1 seek=1100M count=0 >/dev/null 2>&1
+loop=$(losetup -f)
+losetup "${loop}" "${image_name}"
+
+# Setup Partition Table
+echo "Creating Parition Table"
+
+SIZE=$(fdisk -l "${loop}" | grep Disk | awk '{print $5}')
+echo "DISK SIZE - $SIZE bytes"
+
+# Handle in sectors to support old and new sfdisk
+SECTORS=$(echo "$SIZE/512" | bc)
+# p1 71MB FAT
+# p2 900MB Linux
+# p2 Remainder Linux
+BOOT_OFFSET=$((2048))
+BOOT_SIZE=$((64*1024*1024/512))
+ROOT_OFFSET=$((BOOT_OFFSET+BOOT_SIZE))
+ROOT_SIZE=$((900*1024*1024/512))
+DATA_OFFSET=$((ROOT_OFFSET+ROOT_SIZE))
+DATA_SIZE=$((SECTORS-DATA_OFFSET))
+
+echo Creating partition table
+echo Data offset: ${DATA_OFFSET}
+echo Data size: ${DATA_SIZE}
+# Note: -u S -L is required for old sfdisk
+(sfdisk "${loop}" << EOF
+${BOOT_OFFSET},${BOOT_SIZE},0x0C,*
+${ROOT_OFFSET},${ROOT_SIZE},,-
+${DATA_OFFSET},${DATA_SIZE},,-
+EOF
+) > /dev/null
+
+echo "Syncing"
+sync
+losetup -d "${loop}"
+
+# Create boot partition
+loop=$(losetup -f)
+losetup "${loop}" -o $((BOOT_OFFSET*512)) --sizelimit $((BOOT_SIZE*512)) "${image_name}"
+echo "Creating Boot Partition"
+mkfs.vfat -F 32 -n "boot" "${loop}" > /dev/null
+rm -rf ./mnt
+mkdir ./mnt
+mount "${loop}" ./mnt
+pushd ./mnt
+for f in ${boot}/*
+do
+        cp "$f" .
+done
+popd
+echo "Syncing"
+sync
+umount "${loop}"
+rm -rf ./mnt
+losetup -d "${loop}"
+
+# Create filesystem partition
+loop=$(losetup -f)
+losetup "${loop}" -o $((ROOT_OFFSET*512)) --sizelimit $((ROOT_SIZE*512)) "${image_name}"
+echo "Creating Root Parition"
+mkfs.ext4 -L "rootfs" "${loop}" > /dev/null
+rm -rf ./mnt
+mkdir ./mnt
+mount "${loop}" ./mnt
+pushd ./mnt
+# Copy root files from directory instead, easier to modify
+# tar xf "${root_ball}"
+cp -R ${root}/* .
+popd
+echo "Syncing"
+sync
+umount "${loop}"
+rm -rf ./mnt
+losetup -d "${loop}"
+
+# Create spare partition
+loop=$(losetup -f)
+losetup "${loop}" -o $((DATA_OFFSET*512)) --sizelimit $((DATA_SIZE*512)) "${image_name}"
+echo "Creating Spare Parition"
+mkfs.ext3 -L "START_HERE" "${loop}" > /dev/null
+echo "Syncing"
+sync
+losetup -d "${loop}"
+
+# Writing the u-boot image to sd card
+dd if=
+
+# Generate md5 sums, excluding any svn directories
+md5sum $(find . -type f | grep -v svn) > md5sums.txt
+

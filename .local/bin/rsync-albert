@@ -1,0 +1,13 @@
+#!/bin/bash
+
+SMB_SERVER=//albert/backup/jkiggins
+MOUNT_POINT=/media/jkiggins/albert
+
+# Mount //albert/backup/jkiggins
+MOUNT_TEST=$(mount | grep $SMB_SERVER )
+if [ -z "$MOUNT_TEST" ]; then
+  sudo mount -t cifs -o username=jkiggins,gid=1000,uid=1000 $SMB_SERVER $MOUNT_POINT
+fi;
+
+rsync $@ $MOUNT_POINT
+

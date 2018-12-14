@@ -1,0 +1,8 @@
+#!/bin/bash
+
+WEEK_START=$(date -d "-$(date +%w) days")
+
+for ((i=0; i<7; i++)); do
+    DAY=$(date -d "$WEEK_START + $i days" +"%Y-%m-%d")
+    watson report $@ -f $DAY -t $DAY
+done

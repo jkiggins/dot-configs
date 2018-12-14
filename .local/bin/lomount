@@ -1,0 +1,9 @@
+# !/bin/bash
+lodev=$(losetup -f)
+losetup -P ${lodev} $1
+echo "Mounted Paritions"
+echo "-----------------"
+echo "${lodev}"
+BN=$(basename "${lodev}")
+OP=$(ls /dev | grep "${BN}")
+echo $OP

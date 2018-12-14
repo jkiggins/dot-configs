@@ -1,0 +1,42 @@
+#!/bin/bash
+
+verbose_printf(){
+	if [ $VERBOSE -ge 2 ]; then
+		printf "$@"
+        fi;
+ }
+ 
+info_printf(){
+	if [ $VERBOSE -ge 1 ]; then
+		printf "$@"
+	fi;
+}
+
+
+
+TIME_FILE=~/.work_log/signin
+
+VERBOSE=2
+
+ROLL_HOUR="6:00:00"
+
+TODAY=$(date +"%m/%d/%Y")
+TOMORROW=$(date +"%m/%d/%Y" --date="1 days")
+
+STARTL_TIME_T=$(date --date="$TODAY 6:00:00" +"%s")
+STARTL_TIME_M=$(date --date="$TOMORROW 6:00:00" +"%s")
+SLEEP_TIME=$(( $STARTL_TIME_M - $STARTL_TIME_T ))
+
+LAST_IN_TIME=$(ls -l --time-style=+"%s" $TIME_FILE | awk -F' ' '{print $6;}')
+
+if [ LAST_IN_TIME -le STARTL_TIME ]; then
+	# Once activity is detected, sign in
+	verbose_printf "Waiting for activity then signing in\n"
+	
+else
+	# Sleep until tomorrow at STARTL_TIME
+	verbose_printf "Sleeping until tomorrow at %s -> %s s\n" $ROLL_HOUR $SLEEP_TIME
+	sleep $SLEEP_TIME
+	
+fi;
+
