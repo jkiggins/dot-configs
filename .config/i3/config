@@ -147,6 +147,9 @@ bindsym $mod1+8 workspace 8b
 bindsym $mod1+9 workspace 9b
 bindsym $mod1+0 workspace 10b
 
+# shortcuts
+bindsym $mod+q workspace 1b; workspace 1a
+
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1a
 bindsym $mod+Shift+2 move container to workspace 2a
