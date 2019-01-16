@@ -1,7 +1,6 @@
 #!/bin/bash
 
 CONFIG_PATH=~/.config/qsync/config
-SEARCH_PATH=.
 
 function die()
 {
@@ -9,7 +8,17 @@ function die()
   exit 1
 }
 
-function sync()
+function sync_pull()
+{
+  printf "Using CMD: %s\n" "$SSH_CMD"
+  printf "Syncing: %s\n" $(realpath $1)
+  . $1
+  printf "%s <-- %s\n" $SRC $DST
+
+  rsync -avzi -e "$SSH_CMD" --progress $DST $SRC/..
+}
+
+function sync_push()
 {
   printf "Using CMD: %s\n" "$SSH_CMD"
   printf "Syncing: %s\n" $(realpath $1)
@@ -17,12 +26,6 @@ function sync()
   printf "%s --> %s\n" $SRC $DST
 
   rsync -avzi -e "$SSH_CMD" --progress --delete-excluded $SRC $DST
-  rsync -avzi -e "$SSH_CMD" --progress $DST $SRC/..
-}
-
-function qsync_find()
-{
- find $SEARCH_PATH -type f -name ".qsync" 
 }
 
 if [ -f $CONFIG_PATH ]; then
@@ -33,15 +36,17 @@ fi;
 
 SSH_CMD="ssh -p $PORT"
 
+ACTION=pull
 if [ ! -z "$1" ]; then
-  SEARCH_PATH=$1
+  ACTION=$1
 fi;
 
-pushd $SEARCH_PATH
+if [ ! -f .qsync ]; then
+  die "no .qsync file"
+fi;
 
-shopt -s globstar
-for qsync in **/.qsync; do
-  sync $qsync
-done
-
-popd
+if [ "$ACTION" == "pull" ]; then
+  sync_pull .qsync
+elif [ "$ACTION" == "push" ]; then
+  sync_push .qsync
+fi;
