@@ -1,0 +1,44 @@
+#!/bin/bash
+
+CONFIG_PATH=~/.config/qsync/config
+SEARCH_PATH=.
+
+function die()
+{
+  printf "Error: %s" $1
+  exit 1
+}
+
+function sync()
+{
+  printf "Syncing: %s\n" $(realpath $1)
+  . $1
+  printf "%s --> %s\n" $SRC $DST
+
+  rsync -avz -e ssh --progress --delete-excluded $SRC $DST
+  rsync -avz -e ssh --progress $DST $SRC
+}
+
+function qsync_find()
+{
+ find $SEARCH_PATH -type f -name ".qsync" 
+}
+
+if [ -f $CONFIG_PATH ]; then
+  . $CONFIG_PATH
+else
+ die "No config file $CONFIG_PATH"
+fi;
+
+if [ ! -z "$1" ]; then
+  SEARCH_PATH=$1
+fi;
+
+pushd $SEARCH_PATH
+
+shopt -s globstar
+for qsync in **/.qsync; do
+  sync $qsync
+done
+
+popd
