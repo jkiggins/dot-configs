@@ -1,3 +1,2 @@
-KSVER=qzpvs@192.168.1.3:docs/sync
-
-
+PORT=9765
+KSVER=qzpvs@qzpvr.ddns.net:docs/sync

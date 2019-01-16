@@ -11,12 +11,13 @@ function die()
 
 function sync()
 {
+  printf "Using CMD: %s\n" "$SSH_CMD"
   printf "Syncing: %s\n" $(realpath $1)
   . $1
   printf "%s --> %s\n" $SRC $DST
 
-  rsync -avz -e ssh --progress --delete-excluded $SRC $DST
-  rsync -avz -e ssh --progress $DST $SRC/..
+  rsync -avzi -e "$SSH_CMD" --progress --delete-excluded $SRC $DST
+  rsync -avzi -e "$SSH_CMD" --progress $DST $SRC/..
 }
 
 function qsync_find()
@@ -29,6 +30,8 @@ if [ -f $CONFIG_PATH ]; then
 else
  die "No config file $CONFIG_PATH"
 fi;
+
+SSH_CMD="ssh -p $PORT"
 
 if [ ! -z "$1" ]; then
   SEARCH_PATH=$1
