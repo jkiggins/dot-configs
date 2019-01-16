@@ -16,7 +16,7 @@ function sync()
   printf "%s --> %s\n" $SRC $DST
 
   rsync -avz -e ssh --progress --delete-excluded $SRC $DST
-  rsync -avz -e ssh --progress $DST $SRC
+  rsync -avz -e ssh --progress $DST $SRC/..
 }
 
 function qsync_find()
