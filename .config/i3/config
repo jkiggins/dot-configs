@@ -19,21 +19,33 @@ font pango:monospace 8
 # font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
 
 set $mod Mod4
-set $mod1 Mod1
 
 set $up k
 set $down j
 set $left h
 set $right l 
 
-set $vol_up 123
-set $vol_down 122
+set $aleft a
+set $aright d
+
+set $vol_up 36
+set $vol_down 35
+
+# displays
+
+set $DP_R eDP1
+set $DP_M DP1
+set $DP_L DP2
 
 # use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
+## Opening Applications
 # start a terminal
 bindsym $mod+Return exec termite 
+
+# gnome screenshot
+bindcode $mod+107 exec gnome-screenshot -i
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -94,83 +106,47 @@ bindsym $mod+x scratchpad show
 bindsym $mod+c scratchpad show; scratchpad show
 
 # show/hide firefox
-bindsym $mod+z [instance="adm_scratch"] scratchpad show
+bindsym $mod+z [instance="qt_scratch"] scratchpad show
 # show/hide vifm
 bindsym $mod+a [title="termite_scratch"] scratchpad show
 
+# align workspaces 1,2,3
 
-# Bind worskpaces to outputs
-workspace 1a output HDMI-1
-workspace 2a output HDMI-1
-workspace 3a output HDMI-1
-workspace 4a output HDMI-1
-workspace 5a output HDMI-1
-workspace 6a output HDMI-1
-workspace 7a output HDMI-1
-workspace 8a output HDMI-1
-workspace 9a output HDMI-1
-workspace 10a output HDMI-1
-
-workspace 1b output HDMI-2
-workspace 2b output HDMI-2
-workspace 3b output HDMI-2
-workspace 4b output HDMI-2
-workspace 5b output HDMI-2
-workspace 6b output HDMI-2
-workspace 7b output HDMI-2
-workspace 8b output HDMI-2
-workspace 9b output HDMI-2
-workspace 10b output HDMI-2
+workspace 1 output $DP_L
+workspace 2 output $DP_M
+workspace 3 output $DP_R
 
 # Switch to workspace
-bindsym $mod+1 workspace 1a
-bindsym $mod+2 workspace 2a
-bindsym $mod+3 workspace 3a
-bindsym $mod+4 workspace 4a
-bindsym $mod+5 workspace 5a
-bindsym $mod+6 workspace 6a
-bindsym $mod+7 workspace 7a
-bindsym $mod+8 workspace 8a
-bindsym $mod+9 workspace 9a
-bindsym $mod+0 workspace 10a
-
-bindsym $mod1+1 workspace 1b
-bindsym $mod1+2 workspace 2b
-bindsym $mod1+3 workspace 3b
-bindsym $mod1+4 workspace 4b
-bindsym $mod1+5 workspace 5b
-bindsym $mod1+6 workspace 6b
-bindsym $mod1+7 workspace 7b
-bindsym $mod1+8 workspace 8b
-bindsym $mod1+9 workspace 9b
-bindsym $mod1+0 workspace 10b
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
 
 # move focused container to workspace
-bindsym $mod+Shift+1 move container to workspace 1a
-bindsym $mod+Shift+2 move container to workspace 2a
-bindsym $mod+Shift+3 move container to workspace 3a
-bindsym $mod+Shift+4 move container to workspace 4a
-bindsym $mod+Shift+5 move container to workspace 5a
-bindsym $mod+Shift+6 move container to workspace 6a
-bindsym $mod+Shift+7 move container to workspace 7a
-bindsym $mod+Shift+8 move container to workspace 8a
-bindsym $mod+Shift+9 move container to workspace 9a
-bindsym $mod+Shift+0 move container to workspace 10a
-
-bindsym $mod1+Shift+1 move container to workspace 1b
-bindsym $mod1+Shift+2 move container to workspace 2b
-bindsym $mod1+Shift+3 move container to workspace 3b
-bindsym $mod1+Shift+4 move container to workspace 4b
-bindsym $mod1+Shift+5 move container to workspace 5b
-bindsym $mod1+Shift+6 move container to workspace 6b
-bindsym $mod1+Shift+7 move container to workspace 7b
-bindsym $mod1+Shift+8 move container to workspace 8b
-bindsym $mod1+Shift+9 move container to workspace 9b
-bindsym $mod1+Shift+0 move container to workspace 10b
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
 
 # move workspace to output
-bindsym $mod+Shift+left move workspace to output left 
-bindsym $mod+Shift+right move workspace to output right
+bindsym $mod+Shift+$aright move workspace to output right
+bindsym $mod+Shift+$aleft move workspace to output left
+
+# focus outputs
+# bindsym $mod+$aright focus output right
+# bindsym $mod+$aleft focus output left
 
 # reload the configuration file
 bindsym $mod+Shift+c reload
@@ -207,22 +183,24 @@ bar {
 }
 
 ### Volume ###
-bindcode $vol_up exec amixer -q set Master 0.1dB+ unmute
-bindcode $vol_down exec amixer -q set Master 0.1dB- unmute
+#bindcode $vol_up exec amixer -q set Master 0.1dB+ unmute
+#bindcode $vol_down exec amixer -q set Master 0.1dB- unmute
 
-### Startup Programs ###
+### exec ###
 ## system
 exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 exec --no-startup-id compton --config ~/.config/compton.conf -b -d :0
 exec --no-startup-id gnome-settings-daemon
 exec --no-startup-id ~/.fehbg
+exec --no-startup-id xrandr --output $DP_M --auto --output $DP_R --auto --right-of $DP_M --output $DP_L --auto --left-of $DP_M
 
 ## user - apps
 # start scratchpad apps
 for_window [title=".*scratch$"] move scratchpad
 for_window [instance=".*scratch$"] move scratchpad
 exec --no-startup-id termite --title=termite_scratch
-exec --no-startup-id epiphany --profile ~/.local/epiphany/adm --name=adm_scratch 
+exec --no-startup-id qutebrowser --qt-arg name qt_scratch 
 
 # user - background
 exec --no-startup-id activ-notify -l -sa -m 20 "eye-care" "20-20-20"
+exec --no-startup-id qzpvsocks5

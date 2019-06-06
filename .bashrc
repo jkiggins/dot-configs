@@ -62,11 +62,6 @@ fi
 # colored GCC warnings and errors
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 
-# some more ls aliases
-alias ll='ls -alF'
-alias la='ls -A'
-alias l='ls -CF'
-
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
@@ -91,47 +86,6 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-
-# Functions and Aliases
-
-fsec(){
-	grep -Fxv -f $2 $1
-}
-
-proj(){
-  PROJ_DIR=~/projects
-  cd ${PROJ_DIR}/$(ls -a -p $PROJ_DIR | grep -e "\/" | grep $1)
-}
-
-up(){
-  if [ ! -z "$1" ]; then
-    for ((i=0; i<$1; i++)); do
-      cd ..
-    done
-  fi;
-}
-
-pup(){
-  if [ ! -z "$1" ]; then
-    pushd .
-    up $1
-  fi;
-}
-
-div(){
-  for ((i = 0; i < $COLUMNS; i++)); do
-    printf "-"
-  done
-  echo
-}
-
-alias i3-config='vim ~/.config/i3/config'
-alias essh='ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-alias escp='scp -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
-alias watson-swap='watson stop && watson start'
-alias clip='xclip -selection clipboard'
-alias date-fn='date +"%m-%d-%y_%H%M%S"'
-alias whats-myip="host myip.opendns.com resolver1.opendns.com | grep \"has address\" | awk -F' ' '{print $4;}'"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
