@@ -11,7 +11,7 @@
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
-font pango:monospace 8
+font pango:monospace 12
 
 # Scales for HiDpi
 # font pango:DejaVu Sans Mono 8
@@ -29,11 +29,11 @@ set $right l
 set $vol_up 123
 set $vol_down 122
 
+set $left_monitor HDMI-2
+set $right_monitor HDMI-1
+
 # use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
-
-# start a terminal
-bindsym $mod+Return exec termite 
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -93,34 +93,34 @@ bindsym $mod+x scratchpad show
 # toggle though windows
 bindsym $mod+c scratchpad show; scratchpad show
 
-# show/hide firefox
+# show/hide browser
 bindsym $mod+z [instance="adm_scratch"] scratchpad show
 # show/hide vifm
 bindsym $mod+a [title="termite_scratch"] scratchpad show
 
 
 # Bind worskpaces to outputs
-workspace 1a output HDMI-1
-workspace 2a output HDMI-1
-workspace 3a output HDMI-1
-workspace 4a output HDMI-1
-workspace 5a output HDMI-1
-workspace 6a output HDMI-1
-workspace 7a output HDMI-1
-workspace 8a output HDMI-1
-workspace 9a output HDMI-1
-workspace 10a output HDMI-1
+workspace 1a output $left_monitor 
+workspace 2a output $left_monitor 
+workspace 3a output $left_monitor 
+workspace 4a output $left_monitor 
+workspace 5a output $left_monitor 
+workspace 6a output $left_monitor 
+workspace 7a output $left_monitor 
+workspace 8a output $left_monitor 
+workspace 9a output $left_monitor 
+workspace 10a output $left_monitor
 
-workspace 1b output HDMI-2
-workspace 2b output HDMI-2
-workspace 3b output HDMI-2
-workspace 4b output HDMI-2
-workspace 5b output HDMI-2
-workspace 6b output HDMI-2
-workspace 7b output HDMI-2
-workspace 8b output HDMI-2
-workspace 9b output HDMI-2
-workspace 10b output HDMI-2
+workspace 1b output $right_monitor 
+workspace 2b output $right_monitor 
+workspace 3b output $right_monitor 
+workspace 4b output $right_monitor 
+workspace 5b output $right_monitor 
+workspace 6b output $right_monitor 
+workspace 7b output $right_monitor 
+workspace 8b output $right_monitor 
+workspace 9b output $right_monitor 
+workspace 10b output $right_monitor 
 
 # Switch to workspace
 bindsym $mod+1 workspace 1a
@@ -206,7 +206,17 @@ bar {
         tray_output primary
 }
 
-### Volume ###
+## Opening Common Applications ##
+
+# start a terminal
+bindsym $mod+Return exec termite 
+
+# open gnome-screenshot
+bindcode 107 exec gnome-screenshot 
+bindcode $mod+107 exec gnome-screenshot -i
+
+## System Controls ##
+# Volume
 bindcode $vol_up exec amixer -q set Master 0.1dB+ unmute
 bindcode $vol_down exec amixer -q set Master 0.1dB- unmute
 
@@ -218,11 +228,13 @@ exec --no-startup-id gnome-settings-daemon
 exec --no-startup-id ~/.fehbg
 
 ## user - apps
+# apps to float by default
+for_window [instance="teensy$"] floating enabled
 # start scratchpad apps
 for_window [title=".*scratch$"] move scratchpad
 for_window [instance=".*scratch$"] move scratchpad
 exec --no-startup-id termite --title=termite_scratch
-exec --no-startup-id epiphany --profile ~/.local/epiphany/adm --name=adm_scratch 
+exec --no-startup-id epiphany --name=adm_scratch https://messages.android.com/
 
 # user - background
 exec --no-startup-id activ-notify -l -sa -m 20 "eye-care" "20-20-20"
