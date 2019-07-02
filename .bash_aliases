@@ -46,7 +46,6 @@ docs(){
      vim -c 'set syntax=text' -M ${DOC_PATH}/$(ls -a -p $DOC_PATH | grep -v -e "\/" | grep $1)
 }
 
-
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'
@@ -62,3 +61,5 @@ alias watson-swap='watson stop && watson start'
 alias clip='xclip -selection clipboard'
 alias date-fn='date +"%m-%d-%y_%H%M%S"'
 alias whats-myip="host myip.opendns.com resolver1.opendns.com | grep \"has address\" | awk -F' ' '{print $4;}'"
+
+alias alphanum='tr -dc _A-Z-a-z-0-9 < /dev/urandom | head -c $1'

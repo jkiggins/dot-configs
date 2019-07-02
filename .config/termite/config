@@ -3,7 +3,12 @@
 #audible_bell = false
 #clickable_url = true
 #dynamic_title = true
-font = Monospace 12
+
+# font = UbuntuMono Nerd Font Mono 13
+# font = UbuntuMono Nerd Font 12
+# font = Anonymice Nerd Font 13
+font = mononoki Nerd Font 12
+
 #fullscreen = true
 #icon_name = terminal
 #mouse_autohide = false

@@ -26,17 +26,17 @@ shopt -s checkwinsize
 # make less more friendly for non-text input files, see lesspipe(1)
 [ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
-PROMPT_DIRTRIM=3
+PROMPT_DIRTRIM=2
 
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
 fi
 
-PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
+#PS1=$'\uf31c''  \[\e[0;32m\]\w$ \[\e[0m\]'
+PS1="\[\e[38;5;208m\]"$'\uf31c''  \[\e[38;5;006m\]\w$ \[\e[0m\]'
 
-# Non-color prompt
-# PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
+#PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
@@ -86,6 +86,8 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+. ~/docs/software/alacritty/extra/completions/alacritty.bash
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

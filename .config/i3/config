@@ -42,7 +42,7 @@ floating_modifier $mod
 
 ## Opening Applications
 # start a terminal
-bindsym $mod+Return exec termite 
+bindsym $mod+Return exec alacritty
 
 # gnome screenshot
 bindcode $mod+107 exec gnome-screenshot -i
@@ -108,7 +108,7 @@ bindsym $mod+c scratchpad show; scratchpad show
 # show/hide firefox
 bindsym $mod+z [instance="qt_scratch"] scratchpad show
 # show/hide vifm
-bindsym $mod+a [title="termite_scratch"] scratchpad show
+bindsym $mod+a [title="alacritty_scratch"] scratchpad show
 
 # align workspaces 1,2,3
 
@@ -198,7 +198,7 @@ exec --no-startup-id xrandr --output $DP_M --auto --output $DP_R --auto --right-
 # start scratchpad apps
 for_window [title=".*scratch$"] move scratchpad
 for_window [instance=".*scratch$"] move scratchpad
-exec --no-startup-id termite --title=termite_scratch
+exec --no-startup-id alacritty --title=alacritty_scratch
 exec --no-startup-id qutebrowser --qt-arg name qt_scratch 
 
 # user - background
