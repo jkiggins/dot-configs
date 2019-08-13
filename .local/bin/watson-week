@@ -1,0 +1,120 @@
+#!/usr/bin/python3
+
+import sys
+import json
+import datetime
+import pdb
+
+DAYS_OF_WEEK = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+
+def roundSec(seconds, toMin=0, toSec=0, toHour=0):
+    toMin += toHour * 60
+    toSec += toMin * 60
+
+    if toSec == 0:
+        return 0
+
+    return round(seconds / toSec) * toSec
+
+
+def parseDate(datestr):
+    try:
+        return datetime.datetime.strptime(datestr[0:-6], "%Y-%m-%dT%H:%M:%S")
+    except:
+        pass
+
+    try:
+        return datetime.datetime.strptime(datestr[0:-6], "%Y-%m-%dT%H:%M:%S.%f")
+    except:
+        raise ValueError("Could not parse date")
+        
+
+def parseFrames(frames):
+    binFrames = {}
+
+    for item in frames:
+        start = item["start"]
+        stop = item["stop"]
+        proj = item["project"]
+
+        startDate = parseDate(start)
+        endDate = parseDate(stop)
+        
+        weekday = startDate.weekday()
+        delta = (endDate - startDate)
+        hours = roundSec(delta.seconds, toMin=15) / 60 / 60
+
+        if weekday not in binFrames:
+            binFrames[weekday] = {}
+
+        if proj not in binFrames[weekday]:
+            binFrames[weekday][proj] = 0
+
+        binFrames[weekday][proj] += hours
+    
+    return binFrames
+
+def fitProject(frames, proj, total, target=40):
+    delta = 0
+    for entry in frames.values():
+        for key, hours in entry.items():
+            if total < target:
+                delta = 0.25
+            elif total > target:
+                delta = -0.25
+            else:
+                return total
+
+            print("total: {}".format(total))
+            total += delta
+            entry[key] += delta
+
+    return total
+
+
+def fitWeeklyHours(frames, hours):
+    projects = []
+    total = 0
+
+    for entry in frames.values():
+        for key, hours in entry.items():
+            projects.append({'proj': key, 'hours': hours})
+            total += hours
+
+    projects = sorted(projects, key=lambda i: i['hours'], reverse=True)
+
+    for entry in projects:
+        total = fitProject(frames, entry['proj'], total)
+
+        if total == 40:
+            break
+        
+    return frames
+
+
+def printFrames(binFrames):
+    gtotal = 0
+
+    for key,val in binFrames.items():
+        print("{}".format(DAYS_OF_WEEK[key]))
+        
+        total = 0
+        for projk,hours in val.items():
+            print("\t{}: {}".format(projk, hours))
+            total += hours
+        
+        print("\t-------------")
+        print("\ttotal: {}".format(total))
+        gtotal += total
+
+    print("-----------------")
+    print("total: {}".format(gtotal))
+
+
+if __name__ == '__main__':
+    frames = json.loads(sys.stdin.read())
+    
+    binFrames = parseFrames(frames)
+    printFrames(binFrames)
+    binFrames = fitWeeklyHours(binFrames, 40)
+    printFrames(binFrames)

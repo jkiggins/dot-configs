@@ -10,5 +10,5 @@ fi;
 FILES=$(find -type f ! -path "./.git/*" ! -name "pull.sh")
 
 for f in $FILES; do
-  cp ~/${f} ${f}
+  cp ~/"${f}" "${f}"
 done
