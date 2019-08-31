@@ -46,6 +46,15 @@ docs(){
      vim -c 'set syntax=text' -M ${DOC_PATH}/$(ls -a -p $DOC_PATH | grep -v -e "\/" | grep $1)
 }
 
+
+pd(){
+  pushd $@ > /dev/null
+}
+
+pd-(){
+  popd > /dev/null
+}
+
 alias ll='ls -alF'
 alias la='ls -A'
 alias l='ls -CF'

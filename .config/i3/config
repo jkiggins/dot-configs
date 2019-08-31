@@ -42,10 +42,10 @@ floating_modifier $mod
 
 ## Opening Applications
 # start a terminal
-bindsym $mod+Return exec alacritty
+bindsym $mod+Return exec i3-run term
 
 # gnome screenshot
-bindcode $mod+107 exec gnome-screenshot -i
+bindcode $mod+107 exec i3-run screenshot
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -106,9 +106,9 @@ bindsym $mod+x scratchpad show
 bindsym $mod+c scratchpad show; scratchpad show
 
 # show/hide firefox
-bindsym $mod+z [instance="qt_scratch"] scratchpad show
+bindsym $mod+z [instance="browse-scratch"] scratchpad show
 # show/hide vifm
-bindsym $mod+a [title="alacritty_scratch"] scratchpad show
+bindsym $mod+a [title="term-scratch"] scratchpad show
 
 # align workspaces 1,2,3
 
@@ -188,19 +188,19 @@ bar {
 
 ### exec ###
 ## system
-exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
-exec --no-startup-id compton --config ~/.config/compton.conf -b -d :0
-exec --no-startup-id gnome-settings-daemon
-exec --no-startup-id ~/.fehbg
-exec --no-startup-id xrandr --output $DP_M --auto --output $DP_R --auto --right-of $DP_M --output $DP_L --auto --left-of $DP_M
+exec --no-startup-id i3-run system
+exec --no-startup-id i3-run config-displays 
+exec --no-startup-id i3-run compose 
 
 ## user - apps
 # start scratchpad apps
 for_window [title=".*scratch$"] move scratchpad
 for_window [instance=".*scratch$"] move scratchpad
-exec --no-startup-id alacritty --title=alacritty_scratch
-exec --no-startup-id qutebrowser --qt-arg name qt_scratch 
+
+exec --no-startup-id i3-run socks5
+exec --no-startup-id i3-run background
+exec --no-startup-id i3-run term-scratch
+exec --no-startup-id i3-run browse-scratch 
 
 # user - background
 exec --no-startup-id activ-notify -l -sa -m 20 "eye-care" "20-20-20"
-exec --no-startup-id qzpvsocks5

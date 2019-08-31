@@ -4,7 +4,7 @@
 config_version: 2
 settings:
   content.proxy:
-    global: socks://localhost:8081
+    global: socks://us3535.nordvpn.com
   spellcheck.languages:
     global:
     - en-US
