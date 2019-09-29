@@ -1,0 +1,5 @@
+#!/bin/bash
+
+sudo iptables -t nat -A POSTROUTING -o $1 -j MASQUERADE
+sudo iptables -A FORWARD -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+sudo iptables -A FORWARD -i $2 -o $1 -j ACCEPT
