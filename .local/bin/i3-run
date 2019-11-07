@@ -8,8 +8,8 @@ if [ -z "$1" ]; then
 fi;
 
 DP_R=eDP1
-DP_L=DP2
-DP_M=DP1
+DP_L=HDMI3
+DP_M=HDMI2
 
 case "$1" in
   term-scratch)
@@ -25,7 +25,7 @@ case "$1" in
     ;;
 
   browse-scratch)
-    qutebrowser --qt-arg name browse-scratch
+    qutebrowser -T --qt-arg name browse-scratch
     ;;
 
   socks5)
