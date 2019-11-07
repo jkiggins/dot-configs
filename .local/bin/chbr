@@ -1,0 +1,15 @@
+#!/bin/bash
+
+BRIGHTNESS=/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/brightness
+
+if [ -z "$1" ]; then
+    cat $BRIGHTNESS
+else
+    touch $BRIGHTNESS &> /dev/null
+
+    if [ $? -ne 0 ]; then
+        sudo chmod 666 $BRIGHTNESS
+    fi;
+    
+    echo $1 > $BRIGHTNESS
+fi;
