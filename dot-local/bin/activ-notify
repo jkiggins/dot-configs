@@ -1,0 +1,87 @@
+#!/bin/bash
+
+
+# flags
+VERBOSE=2
+
+# defaults
+LOOP=
+NOTIFY_ARGS=
+ACTIV_ARGS=
+ARGS=
+
+TIME_N=5000
+
+# parse command lines
+
+# off limits from notify-send
+# -u -t -a -i -c -h -v
+# --urgency --expire --app-name --icon --category --hint --version
+
+show_help(){
+	echo "Usage: activ-notify [-l|-loop] title msg"
+	echo "Options:"
+	echo "  -l  -loop     Loop until Ctrl-c"
+	echo
+	echo "title and msg are passed to notify-send"
+	echo "all other options are sent to from activ"
+	echo
+	activ -h
+}
+
+die(){
+	echo "Error"
+	exit 1
+}
+
+verbose_printf(){
+	if [ $VERBOSE -ge 2 ]; then
+		printf "$@"
+	fi;
+}
+
+info_printf(){
+	if [ $VERBOSE -ge 1 ]; then
+		printf "$@"
+	fi;
+}
+
+ARGS=("$@")
+
+# echo "ARGS(before): ${ARGS[@]}"
+
+# Strip out last two positonal args
+NOTIFY_ARGS=(-t ${TIME_N} \"${ARGS[-2]}\" \"${ARGS[-1]}\")
+unset ARGS[-1]
+unset ARGS[-1]
+
+# echo "ARGS(after): ${ARGS[@]}"
+
+for i in ${ARGS[*]}; do
+	case $i in
+		-h|-\?|--help)
+			show_help
+			exit
+			;;
+		-l|--loop)
+			LOOP=1
+			;;
+		-v|--verbose)
+			VERBOSE=2
+			;&		
+		*)
+			ACTIV_ARGS=(${ACTIV_ARGS[*]} $i)
+	esac
+done
+
+verbose_printf "NOTIFY_ARGS: %s\n" "${NOTIFY_ARGS[*]}"
+verbose_printf "ACTIV_ARGS: %s\n" "${ACTIV_ARGS[*]}"
+
+while :;
+do
+	activ ${ACTIV_ARGS[*]} && notify-send ${NOTIFY_ARGS[*]}
+
+	if [ -z "$LOOP" ]; then
+		break
+	fi
+done

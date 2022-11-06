@@ -1,0 +1,15 @@
+#!/bin/bash
+
+DL_PATH=~/docs/downloads
+DEST_DIR=.
+
+MR_LS=$(ls --full-time $DL_PATH | awk '{print $6 "\t" $7 "\t" $9}' | sort -r | head -n 1)
+MR_FILE=$(echo $MR_LS | awk '{print $3}')
+
+if [ ! -z "$1" ]; then
+  DEST_DIR=${DEST_DIR}/${1}/;
+fi;
+
+echo "${DL_PATH}/${MR_FILE} ->  $DEST_DIR"
+mv ${DL_PATH}/${MR_FILE} $DEST_DIR
+

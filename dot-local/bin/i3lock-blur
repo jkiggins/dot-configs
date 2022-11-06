@@ -1,0 +1,17 @@
+#!/bin/bash
+
+FINAL_IMG=/tmp/lockbg-blur.png
+
+scrot /tmp/lockbg.png
+convert /tmp/lockbg.png -blur 0x8 /tmp/lockbg-blur.png
+
+if [ "$1" == "-m" ]; then
+  echo "adding text"
+  convert -fill cyan -pointsize 36 -draw "text 2880,540 '${2}'" /tmp/lockbg-blur.png /tmp/lockbg-blur-text.png
+  FINAL_IMG=/tmp/lockbg-blur-text.png
+fi;
+
+rm /tmp/lockbg.png
+
+i3lock -i ${FINAL_IMG}
+# i3lock -c 000000

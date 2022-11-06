@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# Wrapper for all i3 startup commands, giving me an easy interface to re-run
+# startup things that I may accidentally kill.
+
+if [ -z "$1" ]; then
+  echo "usage: i3-run thing-to-run"
+fi;
+
+DP_R=eDP1
+DP_L=HDMI3
+DP_M=HDMI2
+
+case "$1" in
+  term-scratch)
+    alacritty --title=term-scratch
+    ;;
+
+  term)
+    alacritty
+    ;;
+
+  screenshot)
+    gnome-screenshot -i
+    ;;
+
+  browse-scratch)
+    qutebrowser -T --qt-arg name browse-scratch
+    ;;
+
+  socks5)
+    qzpvsocks5
+    ;;
+
+  compose)
+    compton --config ~/.config/compton.conf -b -d :0
+    ;;
+
+  background)
+    ~/.fehbg
+    ;;
+
+  config-displays)
+    xrandr --output $DP_M --auto --output $DP_R --auto --right-of $DP_M --output $DP_L --auto --left-of $DP_M
+    ;;
+
+  system)
+    gnome-settings-daemon &
+    /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
+    ;;
+
+  *)
+    echo "thing-to-run must be one of:"
+    echo "  term-scratch"
+    echo "  term"
+    echo "  screenshot"
+    echo "  browse-scratch"
+    echo "  socks5"
+    echo "  compose"
+    echo "  background"
+    echo "  config-displays"
+    echo "  system"
+esac
+

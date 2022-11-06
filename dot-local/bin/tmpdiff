@@ -1,0 +1,8 @@
+#!/bin/bash
+
+tmp1=$(mktemp)
+tmp2=$(mktemp)
+
+trap 'rm -f $tmp1 $tmp2' EXIT
+
+meld $tmp1 $tmp2
